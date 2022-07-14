@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Client app</title>
+    </head>
+
+    <body>
+        <p id="coords"></p>
+        <button onclick="getLocation()">get location</button>
+        <button onclick="talkToServer()">talk to server</button>
+
+        <script>
+            function talkToServer() {
+                var xhttp = new XMLHttpRequest();
+                xhttp.onreadystatechange = function() {
+                    if(this.readyState == 4 && this.status == 200) {
+                        document.getElementById("coords").innerHTML = xhttp.responseText;
+                    }
+                };
+
+                xhttp.open("GET", "http://localhost:8080", true);
+                xhttp.send();
+            }
+            
+            var x = document.getElementById("coords");
+            
+            function getLocation() {
+                if (navigator.geolocation){
+                    navigator.geolocation.getCurrentPosition(showPosition);
+                } else {
+                    x.innerHTML = "Geolocation not supported";
+                }
+            }
+            function showPosition(position) {
+                x.innerHTML = "Latitude: " + position.coords.latitude + "<br>Longitude: " + position.coords.longitude;
+            }
+        </script>
+    </body>
+</html>
