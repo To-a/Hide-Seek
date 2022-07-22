@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Client app</title>
+        <script src="jquery-3.6.0.min.js"></script>
+    </head>
+
+    <body>
+        <p id="coords"></p>
+        <button onclick="getIPInfo()">get ip info</button>
+        <button onclick="sendLocation()">send location</button>
+        <button onclick="talkToServer()">talk to server</button>
+        <button onclick="registerUser()">register user</button>
+
+        <script>
+            //Toma's home IPv4 - should use other hosting method for security purposes
+            //port 8080 forwarded for HTTP
+            let serverOrigin = "http://152.165.106.254:8080";
+            let lat, long, userID;
+            function talkToServer() {
+                var xhttp = new XMLHttpRequest();
+                xhttp.onreadystatechange = function() {
+                    if(this.readyState == 4 && this.status == 200) {
+                        document.getElementById("coords").innerHTML = xhttp.responseText;
+                    }
+                };
+                xhttp.open("GET", serverOrigin + "/test", true);
+                xhttp.send();
+            }
+
+            function registerUser() {
+                var xhttp = new XMLHttpRequest();
+                xhttp.onreadystatechange = function() {
+                    if(this.readyState == 4 && this.status == 200) {
+                        userID = xhttp.responseText;
+                    }
+                }
+                xhttp.open("GET", serverOrigin + "/register", true);
+                xhttp.send();
+            }
+
+            function startGame() {
+                var xhttp = new XMLHttpRequest();
+                xhttp.onreadystatechange = function() {
+                    if(this.readyState == 4 && this.status == 200) {
+                        document.getElementById("coords").innerHTML = xhttp.responseText;
+                    }
+                }
+                xhttp.open("GET", serverOrigin + "/start", true);
+                xhttp.send();
+            }
+
+            async function sendLocation(){
+                var xhttp = new XMLHttpRequest();
+                xhttp.open('POST', serverOrigin + "/coords", true);
+                xhttp.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+                getLocation();
+                //sleep 2000ms to wait for ipinfo API response
+                await new Promise(r => setTimeout(r, 2000));
+                var params = `userID=${userID}&lat=${lat}&long=${long}`;
+                xhttp.send(params);
+                //console.log(params);
+            }
+            
+            var x = document.getElementById("coords");
+
+            function getLocation(){
+                $.getJSON('https://ipinfo.io/geo?token=1ba0f9ff4b4a28', function(response) { 
+                        var loc = response.loc.split(',');
+                        lat = loc[0]
+                        long = loc[1]
+                    });
+            }
+
+            //getCurrentLocation no longer supported for http in most browsers due to security issues
+            //so following code only works with https or in localhost/testing environment
+            /*
+            function getLocation() {
+                if (navigator.geolocation){
+                    navigator.geolocation.getCurrentPosition(getCoords);
+                } else {
+                    x.innerHTML = "Geolocation not supported";
+                }
+            }
+            
+            function getCoords(posistion){
+                lat = position.coords.latitude;
+                console.log(lat);
+                long = position.coords.longitude;
+            }
+            */
+        </script>
+    </body>
+</html>

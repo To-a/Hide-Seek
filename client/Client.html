@@ -7,9 +7,11 @@
     <body>
         <p id="coords"></p>
         <button onclick="getLocation()">get location</button>
-        <button onclick="talkToServer()">talk to server</button>
+
 
         <script>
+            var xttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function() {}
             function talkToServer() {
                 var xhttp = new XMLHttpRequest();
                 xhttp.onreadystatechange = function() {
@@ -18,7 +20,7 @@
                     }
                 };
 
-                xhttp.open("GET", "http://localhost:8080", true);
+                xhttp.open("GET", "http://152.165.106.254:8080", true);
                 xhttp.send();
             }
             
